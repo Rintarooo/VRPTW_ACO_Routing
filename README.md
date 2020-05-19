@@ -7,6 +7,7 @@ Run the following command
 ```make clean && make```
 
 ```./main.exe ./Probs/solomon_100/C101.txt```
+the second argument is text file name.
 
 ## Reference
 Public benchmark dataset is from data directory in this repo(https://github.com/DouYishun/vrp-espprc).

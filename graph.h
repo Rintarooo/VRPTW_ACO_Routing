@@ -31,11 +31,11 @@ public:
 	double** distance_matrix;
 	Route(std::vector<std::vector<int>>, int, int);
 	~Route();
-	void show_distance_matrix();
+	void show_distance_matrix() const;
 	bool is_all_visited();
 	void GreedyAlgorithm();
-	void show_each_car_tour();
-	void show_node_info();
+	void show_each_car_tour() const;
+	void show_node_info() const;
 };
 
 #endif

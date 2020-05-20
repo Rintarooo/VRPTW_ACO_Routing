@@ -42,6 +42,12 @@ Route::Route(std::vector<std::vector<int>> param,
 		nodes[i].y = param[i][2];
 		nodes[i].demand = param[i][3];
 		nodes[i].visited = false;
+		// time windows, cars[i].spped = 1; 
+		// bool ok_time , double arrival time = current time + travel time; 
+		// {if(tw_open <= arrival time && arrival time + unload_time <= tw_close) return ture;}
+		// nodes[i].tw_open = param[i][4];
+		// nodes[i].tw_close = param[i][5];
+		// nodes[i].unload_time = param[i][6];
 	}
 
 	for(int i = 0; i < num_car; i++){
@@ -80,7 +86,7 @@ Route::~Route()
 	distance_matrix = nullptr;
 }
 
-void Route::show_distance_matrix()
+void Route::show_distance_matrix() const
 {
 	std::cout << num_node << "*" << num_node << " distance matrix." << std::endl;
 	for(int i = 0; i < num_node; i++){
@@ -150,7 +156,8 @@ void Route::GreedyAlgorithm()
 	std::cout << "algorithm done." << std::endl;
 }
 
-void Route::show_each_car_tour(){
+void Route::show_each_car_tour() const
+{
 	for(int i = 0; i < num_car; i++){
 		if(!cars[i].tour.empty()){
 			std::cout << "vehicle" << i << " tour: ";
@@ -165,7 +172,7 @@ void Route::show_each_car_tour(){
 	}
 }
 
-void Route::show_node_info()
+void Route::show_node_info() const
 {
 	std::cout << "idx,x,y,demand" << std::endl;
 	for(int i = 0; i < num_node; i++){

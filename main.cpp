@@ -45,7 +45,7 @@ int main(int argc, char *argv[]){
 	$make
 	$./main.exe ./Probs/solomon_25/C101.txt		*/
 	if (argc < 2){
-		std::cout << "argc should be > 2" << std::endl;
+		std::cout << "argc should be >= 2" << std::endl;
 		exit(0);
 	}
 	clock_t start_time = clock();

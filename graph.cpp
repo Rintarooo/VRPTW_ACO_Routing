@@ -97,7 +97,7 @@ void Route::show_distance_matrix() const
 	}
 }
 
-bool Route::is_all_visited()
+bool Route::is_all_visited() const
 {
 	for(int i = 0; i < num_node; i++){
 		if(!nodes[i].visited){

@@ -13,7 +13,7 @@ void Car::add_node(Node *a)
 	a->visited = true;
 }
 
-bool Car::ok_capacity(Node a)
+bool Car::ok_capacity(Node a) const
 {
 	if(load + a.demand < car_capacity){
 		return true;
@@ -28,7 +28,7 @@ Route::Route(std::vector<std::vector<int>> param,
 {
 	this->car_capacity = car_capacity;
 	this->num_car = num_car;
-	this->num_node = param.size();//-1 means not counting the depot 
+	this->num_node = param.size();//-1 denotes not counting the depot 
 
 	std::cout << "num_car:" << num_car << " car_capacity:" \
 		<< car_capacity << " num_node(depot + customer):" << num_node << std::endl;
@@ -158,18 +158,26 @@ void Route::GreedyAlgorithm()
 
 void Route::show_each_car_tour() const
 {
+	double total_tour_distance = 0;
 	for(int i = 0; i < num_car; i++){
 		if(!cars[i].tour.empty()){
+			double tour_distance = 0;
 			std::cout << "vehicle" << i << " tour: ";
 			for(int j = 0; j < cars[i].tour.size(); j++){
 				std::cout << cars[i].tour[j].idx << " ";
+				if(j+1 != cars[i].tour.size()){
+					tour_distance += distance_matrix[cars[i].tour[j].idx][cars[i].tour[j+1].idx];
+				}
 			}
-			std::cout << std::endl;
+			total_tour_distance += tour_distance;
+			std::cout << ", " << cars[i].tour.size()-2 << "customer, ";
+			std::cout << std::fixed << std::setprecision(1) << tour_distance << "km" << std::endl;
 		}
 		else{
 			std::cout << "vehicle" << i << ": not used" << std::endl;
 		}
 	}
+	std::cout << "total distance:" << std::fixed << std::setprecision(1) << total_tour_distance << "km" << std::endl;
 }
 
 void Route::show_node_info() const

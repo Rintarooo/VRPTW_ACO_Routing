@@ -39,10 +39,10 @@ void file_loader (char *filename,
 }
 
 int main(int argc, char *argv[]){
-	/*	Command ($g++ -std=c++11  main.cpp -o main.exe)
+	/*	Command 
+	($g++ -std=c++11  main.cpp -o main.exe)
 	($vim Probs/solomon_25/C101.txt)
-	$make clean
-	$make
+	$make clean && make
 	$./main.exe ./Probs/solomon_25/C101.txt		*/
 	if (argc < 2){
 		std::cout << "argc should be >= 2" << std::endl;

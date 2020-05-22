@@ -6,18 +6,17 @@
 class Node{
 public:
 	int x, y, idx, demand;
-	// int tw_open, tw_close, unload_time;//tw: time windows
+	// int tw_open, tw_close, unload_time;//time windows
 	bool visited;
 };
 
 class Car{
 public:
 	int car_capacity, load, location;
-	// double run_distance;// for future work
 	// int load_time;//time windows
 	std::vector<Node> tour; 
 	void add_node(Node*);
-	bool ok_capacity(Node);
+	bool ok_capacity(Node) const;
 };
 
 class Route{

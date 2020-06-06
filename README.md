@@ -14,7 +14,7 @@ Run the following command
 the second argument is text file path
 
 ## Reference
-Public benchmark for VRPTW, [Solomon's problem sets](http://w.cba.neu.edu/~msolomon/problems.htm) is obtained from "data" directory in this repo(https://github.com/DouYishun/vrp-espprc).
+Public benchmark for VRPTW, [Solomon's problem sets](http://w.cba.neu.edu/~msolomon/problems.htm) is obtained from "data" directory in this [repo](https://github.com/DouYishun/vrp-espprc).
 
 https://github.com/gokaytitrek/vehicle-routing-optimization/tree/master/VRO
 

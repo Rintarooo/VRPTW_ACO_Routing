@@ -18,7 +18,6 @@ public:
 	void add_node(Node*, double**);
 	bool ok_capacity(Node) const;
 	bool ok_time(Node, double**) const;//time windows
-	void create_edges();
 };
 
 class Route{
@@ -30,6 +29,7 @@ public:
 	Car* cars;
 	Node* nodes;
 	double** distance_matrix;
+	double calculate_distance(Node, Node) const;
 	Route(std::vector<std::vector<int>>, int, int);
 	~Route();
 	void show_distance_matrix() const;

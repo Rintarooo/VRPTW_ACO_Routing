@@ -40,6 +40,11 @@ bool Car::ok_time(Node a, double** matrix) const
 	}
 }
 
+double Route::calculate_distance(Node a, Node b) const
+{
+	return sqrt(pow(a.x-b.x, 2) + pow(a.y-b.y, 2));
+}
+
 Route::Route(std::vector<std::vector<int>> param,
 				int car_capacity, int num_car)
 {
@@ -82,10 +87,7 @@ Route::Route(std::vector<std::vector<int>> param,
 	}
 	for(int i = 0; i < num_node; i++){
 		for(int j = i + 1; j < num_node; j++){
-			double dx = nodes[i].x - nodes[j].x;
-			double dy = nodes[i].y - nodes[j].y;
-			double node_distance = sqrt(pow(dx, 2) + pow(dy, 2));
-			distance_matrix[i][j] = distance_matrix[j][i] = node_distance;
+			distance_matrix[i][j] = distance_matrix[j][i] = calculate_distance(nodes[i], nodes[j]);
 		}
 	}
 }
@@ -180,26 +182,27 @@ void Route::show_each_car_tour() const
 {
 	double total_tour_distance = 0;
 	for(int i = 0; i < num_car; i++){
-		if(!cars[i].tour.empty()){
+		// if(!cars[i].tour.empty()){
+		if(cars[i].tour.size() > 1){
 			double tour_distance = 0;
-			std::cout << "vehicle" << i << " tour: ";
+			std::cout << "vehicle" << i << ": ";
 			for(int j = 0; j < cars[i].tour.size(); j++){
-				std::cout << cars[i].tour[j].idx << " ";
+				std::cout << cars[i].tour[j].idx << "->";
 				if(j+1 != cars[i].tour.size()){
 					tour_distance += distance_matrix[cars[i].tour[j].idx][cars[i].tour[j+1].idx];
 				}
 			}
+			std::cout << ", " << std::fixed << std::setprecision(1) <<  tour_distance << "km";
 			total_tour_distance += tour_distance;
 			if(cars[i].tour.size() > 2){
-				std::cout << "visited customer:" << cars[i].tour.size()-2 << ",";
+				std::cout << ", visited customer:" << cars[i].tour.size()-2 << std::endl;
 			}
-			std::cout << std::fixed << std::setprecision(1) << tour_distance << "km" << std::endl;
 		}
 		else{
 			std::cout << "vehicle" << i << ": not used" << std::endl;
 		}
 	}
-	std::cout << "total distance:" << std::fixed << std::setprecision(1) << total_tour_distance << "km" << std::endl;
+	std::cout << "total distance:" << total_tour_distance << "km" << std::endl;
 }
 
 void Route::show_node_info() const

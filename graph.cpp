@@ -5,17 +5,34 @@
 #include <iomanip> // std::setprecision
 #include "graph.h"
 
-void Car::add_node(Node *a)
+void Car::add_node(Node *a, double** matrix)
 {
+	if(!tour.empty()){// though the tour first adds the depot, it doesnt count time 
+		now_time += (int)matrix[tour.back().idx][a->idx] / car_speed;
+		now_time += a->unload_time;	
+	}
 	tour.push_back(*a);
-	load += a->demand;
-	location = a->idx;
+	now_load += a->demand;
+	now_idx = a->idx;
 	a->visited = true;
+	
 }
 
 bool Car::ok_capacity(Node a) const
 {
-	if(load + a.demand < car_capacity){
+	if(now_load + a.demand < car_capacity){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+bool Car::ok_time(Node a, double** matrix) const
+{
+	int travel_time = (int)matrix[tour.back().idx][a.idx] / car_speed;
+	int arrival_time = now_time + travel_time;
+	if(a.tw_open <= arrival_time && arrival_time + a.unload_time <= a.tw_close){
 		return true;
 	}
 	else{
@@ -26,7 +43,6 @@ bool Car::ok_capacity(Node a) const
 Route::Route(std::vector<std::vector<int>> param,
 				int car_capacity, int num_car)
 {
-	this->car_capacity = car_capacity;
 	this->num_car = num_car;
 	this->num_node = param.size();//-1 denotes not counting the depot 
 
@@ -42,16 +58,19 @@ Route::Route(std::vector<std::vector<int>> param,
 		nodes[i].y = param[i][2];
 		nodes[i].demand = param[i][3];
 		nodes[i].visited = false;
-		// time windows, cars[i].spped = 1; 
-		// bool ok_time , double arrival time = current time + travel time; 
-		// {if(tw_open <= arrival time && arrival time + unload_time <= tw_close) return ture;}
-		// nodes[i].tw_open = param[i][4];
-		// nodes[i].tw_close = param[i][5];
-		// nodes[i].unload_time = param[i][6];
+		//time windows
+		nodes[i].tw_open = param[i][4];
+		nodes[i].tw_close = param[i][5];
+		nodes[i].unload_time = param[i][6];
 	}
 
 	for(int i = 0; i < num_car; i++){
 		cars[i].car_capacity = car_capacity;
+		cars[i].now_load = 0;
+		cars[i].now_idx = 0;
+		//time windows
+		cars[i].car_speed = 1;
+		cars[i].now_time = 0;
 	}
 
 	distance_matrix = new double* [num_node]; 
@@ -73,7 +92,7 @@ Route::Route(std::vector<std::vector<int>> param,
 
 Route::~Route()
 { 
-	std::cout << "call destructor" << std::endl;
+	std::cout << "Call destructor" << std::endl;
 	delete[] nodes;
 	nodes = nullptr;
 	delete[] cars;
@@ -116,42 +135,43 @@ void Route::GreedyAlgorithm()
 		bool is_return_depot = true;
 		
 		if(cars[car_idx].tour.empty()){
-			cars[car_idx].add_node(&nodes[0]);// nodes[0] is depot
+			cars[car_idx].add_node(&nodes[0], distance_matrix);// nodes[0] is depot
 		}
 
 		for(int node_idx = 1; node_idx < num_node; node_idx++){
 			if(!nodes[node_idx].visited){
 				if(cars[car_idx].ok_capacity(nodes[node_idx])){
-					double tmp_distance = distance_matrix[cars[car_idx].location][node_idx];
-					if(tmp_distance < min_distance){
-						min_distance = tmp_distance;
-						is_return_depot = false;
-						best_node_idx = node_idx;
+					if(cars[car_idx].ok_time(nodes[node_idx], distance_matrix)){
+						double tmp_distance = distance_matrix[cars[car_idx].now_idx][node_idx];
+						if(tmp_distance < min_distance){
+							min_distance = tmp_distance;
+							is_return_depot = false;
+							best_node_idx = node_idx;
+						}
 					}
-
 				}
 			}
 		}
 
 		if(!is_return_depot){
-			cars[car_idx].add_node(&nodes[best_node_idx]);
+			cars[car_idx].add_node(&nodes[best_node_idx], distance_matrix);
 		}
 		else{
 			if(car_idx + 1 < num_car){// check if enough the number of vehicle exists
-				if(cars[car_idx].location != 0){// if the vehicle does not return back to the depot
-					cars[car_idx].add_node(&nodes[0]);
+				if(cars[car_idx].now_idx != 0){// if the vehicle does not return back to the depot
+					cars[car_idx].add_node(&nodes[0], distance_matrix);
 				}
 				car_idx += 1;// assign next vehicle
 			}
 			else{
-				std::cout << "cannot solve for this Greedy algorithm." << std::endl;
+				std::cout << "Cannot solve this by Greedy algorithm." << std::endl;
 				break;// std::exit(0);
 			}
 			
 		}
-	}
-	if(cars[car_idx].location != 0){// if the vehicle does not return back to the depot
-					cars[car_idx].add_node(&nodes[0]);
+	}//while loop done
+	if(cars[car_idx].now_idx != 0){// if the vehicle does not return back to the depot
+					cars[car_idx].add_node(&nodes[0], distance_matrix);
 	}
 	std::cout << "algorithm done." << std::endl;
 }
@@ -170,7 +190,9 @@ void Route::show_each_car_tour() const
 				}
 			}
 			total_tour_distance += tour_distance;
-			std::cout << ", " << cars[i].tour.size()-2 << "customer, ";
+			if(cars[i].tour.size() > 2){
+				std::cout << "visited customer:" << cars[i].tour.size()-2 << ",";
+			}
 			std::cout << std::fixed << std::setprecision(1) << tour_distance << "km" << std::endl;
 		}
 		else{
@@ -182,8 +204,9 @@ void Route::show_each_car_tour() const
 
 void Route::show_node_info() const
 {
-	std::cout << "idx,x,y,demand" << std::endl;
+	std::cout << std::endl << "idx,x,y,demand,tw_open,tw_close,unload_time" << std::endl;
 	for(int i = 0; i < num_node; i++){
-		std::cout << nodes[i].idx << " " << nodes[i].x << " " << nodes[i].y << " " << nodes[i].demand << std::endl;
+		std::cout << nodes[i].idx << " " << nodes[i].x << " " << nodes[i].y << " " << nodes[i].demand << \
+			" " << nodes[i].tw_open << " " << nodes[i].tw_close << " " << nodes[i].unload_time << std::endl;
 	}
 }

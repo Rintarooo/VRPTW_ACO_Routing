@@ -48,7 +48,7 @@ int main(int argc, char *argv[]){
 		std::cout << "argc should be >= 2" << std::endl;
 		exit(0);
 	}
-	clock_t start_time = clock();
+	const clock_t start_time = clock();
 	std::vector<std::vector<int>> param;
 	int car_capacity, num_car;
 	file_loader(argv[1], param, car_capacity, num_car);
@@ -59,7 +59,7 @@ int main(int argc, char *argv[]){
 	// route.show_node_info();
 	// route.show_distance_matrix();
 
-	clock_t end_time = clock();
+	const clock_t end_time = clock();
 	std::cout << (end_time - start_time)/ double(CLOCKS_PER_SEC) << "sec" << std::endl;
 	return 0;
 }

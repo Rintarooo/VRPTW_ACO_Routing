@@ -6,17 +6,19 @@
 class Node{
 public:
 	int x, y, idx, demand;
-	// int tw_open, tw_close, unload_time;//time windows
 	bool visited;
+	int tw_open, tw_close, unload_time;//time windows
 };
 
 class Car{
 public:
-	int car_capacity, load, location;
-	// int load_time;//time windows
-	std::vector<Node> tour; 
-	void add_node(Node*);
+	int car_capacity, now_load, now_idx;
+	int car_speed, now_time;//time windows
+	std::vector <Node> tour; 
+	void add_node(Node*, double**);
 	bool ok_capacity(Node) const;
+	bool ok_time(Node, double**) const;//time windows
+	void create_edges();
 };
 
 class Route{
@@ -24,7 +26,7 @@ public:
 	// std::vector<Car> cars;
 	// std::vector<Node> nodes;
 	// std::vector<std::vector<double>> distance_matrix;
-	int car_capacity, num_car, num_node;
+	int num_car, num_node;
 	Car* cars;
 	Node* nodes;
 	double** distance_matrix;

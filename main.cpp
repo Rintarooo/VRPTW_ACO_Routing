@@ -59,9 +59,12 @@ int main(int argc, char *argv[]){
 	// graph.show_node_info();
 	// graph.show_distance_matrix();
 
+<<<<<<< HEAD
 	// Colony colony(param, car_capacity, num_car);
 	// colony.show_distance_matrix();
 
+=======
+>>>>>>> 062f36e6bb8bcf84b68a643a0e241cd04ad9ba96
 	const clock_t end_time = clock();
 	std::cout << (end_time - start_time)/ double(CLOCKS_PER_SEC) << "sec" << std::endl;
 	return 0;

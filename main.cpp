@@ -48,18 +48,21 @@ int main(int argc, char *argv[]){
 		std::cout << "argc should be >= 2" << std::endl;
 		exit(0);
 	}
-	clock_t start_time = clock();
+	const clock_t start_time = clock();
 	std::vector<std::vector<int>> param;
 	int car_capacity, num_car;
 	file_loader(argv[1], param, car_capacity, num_car);
 	
-	Route route(param, car_capacity, num_car);
-	route.GreedyAlgorithm();
-	route.show_each_car_tour();
-	// route.show_node_info();
-	// route.show_distance_matrix();
+	Graph graph(param, car_capacity, num_car);
+	graph.GreedyAlgorithm();
+	graph.show_each_car_tour();
+	// graph.show_node_info();
+	// graph.show_distance_matrix();
 
-	clock_t end_time = clock();
+	// Colony colony(param, car_capacity, num_car);
+	// colony.show_distance_matrix();
+
+	const clock_t end_time = clock();
 	std::cout << (end_time - start_time)/ double(CLOCKS_PER_SEC) << "sec" << std::endl;
 	return 0;
 }

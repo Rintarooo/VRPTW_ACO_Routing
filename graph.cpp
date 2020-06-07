@@ -5,17 +5,57 @@
 #include <iomanip> // std::setprecision
 #include "graph.h"
 
-void Car::add_node(Node *a)
+// double INIT_PHERO = 1;
+// double EVAP_RATE = 0.5;
+// double ALPHA = 50;
+// double BETA = 1;
+
+const double Colony::init_phero = 1;
+const double Colony::evap_rate = 0.5;//evaporation
+const double Colony::alpha = 50;//prob_next_city
+const double Colony::beta = 1;//prob_next_city
+const double Colony::q = 1;//update egde pheromone using tour_length
+
+Colony::Colony(std::vector<std::vector<int>> param,
+				int car_capacity, int num_car) : Graph(param, car_capacity, num_car)
 {
+	std::cout << "constructor!!" << std::endl;
+	phero_matrix = new double* [num_node]; 
+	for(int i = 0; i < num_node; i++){
+		phero_matrix[i] = new double [num_node];
+		for(int j = 0; j < num_node; j++){
+			phero_matrix[i][j] = init_phero;// initialize all elements in a row
+		}
+	}
+}
+
+Colony::~Colony()
+{ 
+	std::cout << "destructor!!" << std::endl;
+	for(int i = 0; i < num_node; i++){
+		delete[] phero_matrix[i];
+		phero_matrix[i] = nullptr;
+	}
+	delete[] phero_matrix;
+	phero_matrix = nullptr;
+}
+
+void Car::add_node(Node *a, double** matrix)
+{
+	if(!tour.empty()){// though the tour first adds the depot, it doesnt count time 
+		now_time += (int)matrix[tour.back().idx][a->idx] / car_speed;
+		now_time += a->unload_time;	
+	}
 	tour.push_back(*a);
-	load += a->demand;
-	location = a->idx;
+	now_load += a->demand;
+	now_idx = a->idx;
 	a->visited = true;
+	
 }
 
 bool Car::ok_capacity(Node a) const
 {
-	if(load + a.demand < car_capacity){
+	if(now_load + a.demand < car_capacity){
 		return true;
 	}
 	else{
@@ -23,13 +63,34 @@ bool Car::ok_capacity(Node a) const
 	}
 }
 
-Route::Route(std::vector<std::vector<int>> param,
+bool Car::ok_time(Node a, double** matrix) const
+{
+	int travel_time = (int)matrix[tour.back().idx][a.idx] / car_speed;
+	int arrival_time = now_time + travel_time;
+	if(a.tw_open <= arrival_time && arrival_time + a.unload_time <= a.tw_close){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+void Graph::calculate_node_distance()
+{
+	for(int i = 0; i < num_node; i++){
+		for(int j = i + 1; j < num_node; j++){
+			distance_matrix[i][j] = distance_matrix[j][i] = sqrt(pow(nodes[i].x - nodes[j].x, 2) + pow(nodes[i].y - nodes[j].y, 2));
+		}
+	}
+}
+
+Graph::Graph(std::vector<std::vector<int>> param,
 				int car_capacity, int num_car)
 {
-	this->car_capacity = car_capacity;
 	this->num_car = num_car;
 	this->num_node = param.size();//-1 denotes not counting the depot 
 
+	std::cout << "constructor!" << std::endl;
 	std::cout << "num_car:" << num_car << " car_capacity:" \
 		<< car_capacity << " num_node(depot + customer):" << num_node << std::endl;
 
@@ -42,16 +103,19 @@ Route::Route(std::vector<std::vector<int>> param,
 		nodes[i].y = param[i][2];
 		nodes[i].demand = param[i][3];
 		nodes[i].visited = false;
-		// time windows, cars[i].spped = 1; 
-		// bool ok_time , double arrival time = current time + travel time; 
-		// {if(tw_open <= arrival time && arrival time + unload_time <= tw_close) return ture;}
-		// nodes[i].tw_open = param[i][4];
-		// nodes[i].tw_close = param[i][5];
-		// nodes[i].unload_time = param[i][6];
+		//time windows
+		nodes[i].tw_open = param[i][4];
+		nodes[i].tw_close = param[i][5];
+		nodes[i].unload_time = param[i][6];
 	}
 
 	for(int i = 0; i < num_car; i++){
 		cars[i].car_capacity = car_capacity;
+		cars[i].now_load = 0;
+		cars[i].now_idx = 0;
+		//time windows
+		cars[i].car_speed = 1;
+		cars[i].now_time = 0;
 	}
 
 	distance_matrix = new double* [num_node]; 
@@ -61,19 +125,12 @@ Route::Route(std::vector<std::vector<int>> param,
 			distance_matrix[i][j] = 0;// initialization all elements in a row
 		}
 	}
-	for(int i = 0; i < num_node; i++){
-		for(int j = i + 1; j < num_node; j++){
-			double dx = nodes[i].x - nodes[j].x;
-			double dy = nodes[i].y - nodes[j].y;
-			double node_distance = sqrt(pow(dx, 2) + pow(dy, 2));
-			distance_matrix[i][j] = distance_matrix[j][i] = node_distance;
-		}
-	}
+	calculate_node_distance();
 }
 
-Route::~Route()
+Graph::~Graph()
 { 
-	std::cout << "call destructor" << std::endl;
+	std::cout << "destructor!" << std::endl;
 	delete[] nodes;
 	nodes = nullptr;
 	delete[] cars;
@@ -86,7 +143,7 @@ Route::~Route()
 	distance_matrix = nullptr;
 }
 
-void Route::show_distance_matrix() const
+void Graph::show_distance_matrix() const
 {
 	std::cout << num_node << "*" << num_node << " distance matrix." << std::endl;
 	for(int i = 0; i < num_node; i++){
@@ -97,7 +154,7 @@ void Route::show_distance_matrix() const
 	}
 }
 
-bool Route::is_all_visited() const
+bool Graph::is_all_visited() const
 {
 	for(int i = 0; i < num_node; i++){
 		if(!nodes[i].visited){
@@ -107,7 +164,7 @@ bool Route::is_all_visited() const
 	return true;
 }
 
-void Route::GreedyAlgorithm()
+void Graph::GreedyAlgorithm()
 {
 	int car_idx = 0;
 	while(!is_all_visited()){
@@ -116,62 +173,68 @@ void Route::GreedyAlgorithm()
 		bool is_return_depot = true;
 		
 		if(cars[car_idx].tour.empty()){
-			cars[car_idx].add_node(&nodes[0]);// nodes[0] is depot
+			cars[car_idx].add_node(&nodes[0], distance_matrix);// nodes[0] is depot
 		}
 
 		for(int node_idx = 1; node_idx < num_node; node_idx++){
 			if(!nodes[node_idx].visited){
 				if(cars[car_idx].ok_capacity(nodes[node_idx])){
-					double tmp_distance = distance_matrix[cars[car_idx].location][node_idx];
-					if(tmp_distance < min_distance){
-						min_distance = tmp_distance;
-						is_return_depot = false;
-						best_node_idx = node_idx;
+					if(cars[car_idx].ok_time(nodes[node_idx], distance_matrix)){
+						double tmp_distance = distance_matrix[cars[car_idx].now_idx][node_idx];
+						if(tmp_distance < min_distance){
+							min_distance = tmp_distance;
+							is_return_depot = false;
+							best_node_idx = node_idx;
+						}
 					}
-
 				}
 			}
 		}
 
 		if(!is_return_depot){
-			cars[car_idx].add_node(&nodes[best_node_idx]);
+			cars[car_idx].add_node(&nodes[best_node_idx], distance_matrix);
 		}
 		else{
 			if(car_idx + 1 < num_car){// check if enough the number of vehicle exists
-				if(cars[car_idx].location != 0){// if the vehicle does not return back to the depot
-					cars[car_idx].add_node(&nodes[0]);
+				if(cars[car_idx].now_idx != 0){// if the vehicle does not return back to the depot
+					cars[car_idx].add_node(&nodes[0], distance_matrix);
 				}
 				car_idx += 1;// assign next vehicle
 			}
 			else{
-				std::cout << "cannot solve for this Greedy algorithm." << std::endl;
+				std::cout << "Cannot solve this by Greedy algorithm." << std::endl;
 				break;// std::exit(0);
 			}
 			
 		}
-	}
-	if(cars[car_idx].location != 0){// if the vehicle does not return back to the depot
-					cars[car_idx].add_node(&nodes[0]);
+	}//while loop done
+	if(cars[car_idx].now_idx != 0){// if the vehicle does not return back to the depot
+					cars[car_idx].add_node(&nodes[0], distance_matrix);
 	}
 	std::cout << "algorithm done." << std::endl;
 }
 
-void Route::show_each_car_tour() const
+void Graph::calculate_tour_distance(std::vector<Node>tour, double &tour_distance) const
+{
+	for(int j = 0; j < tour.size(); j++){
+		std::cout << tour[j].idx << " ";
+		if(j+1 != tour.size()){
+			tour_distance += distance_matrix[tour[j].idx][tour[j+1].idx];
+		}
+	}
+	std::cout << " " << std::fixed << std::setprecision(1) << tour_distance << "km";
+}
+
+void Graph::show_each_car_tour() const
 {
 	double total_tour_distance = 0;
 	for(int i = 0; i < num_car; i++){
-		if(!cars[i].tour.empty()){
-			double tour_distance = 0;
+		if(cars[i].tour.size() > 1){
 			std::cout << "vehicle" << i << " tour: ";
-			for(int j = 0; j < cars[i].tour.size(); j++){
-				std::cout << cars[i].tour[j].idx << " ";
-				if(j+1 != cars[i].tour.size()){
-					tour_distance += distance_matrix[cars[i].tour[j].idx][cars[i].tour[j+1].idx];
-				}
-			}
+			double tour_distance = 0;
+			calculate_tour_distance(cars[i].tour, tour_distance);
 			total_tour_distance += tour_distance;
-			std::cout << ", " << cars[i].tour.size()-2 << "customer, ";
-			std::cout << std::fixed << std::setprecision(1) << tour_distance << "km" << std::endl;
+			std::cout << ", visited customer:" << cars[i].tour.size()-2 << std::endl;
 		}
 		else{
 			std::cout << "vehicle" << i << ": not used" << std::endl;
@@ -180,10 +243,11 @@ void Route::show_each_car_tour() const
 	std::cout << "total distance:" << std::fixed << std::setprecision(1) << total_tour_distance << "km" << std::endl;
 }
 
-void Route::show_node_info() const
+void Graph::show_node_info() const
 {
-	std::cout << "idx,x,y,demand" << std::endl;
+	std::cout << std::endl << "idx,x,y,demand,tw_open,tw_close,unload_time" << std::endl;
 	for(int i = 0; i < num_node; i++){
-		std::cout << nodes[i].idx << " " << nodes[i].x << " " << nodes[i].y << " " << nodes[i].demand << std::endl;
+		std::cout << nodes[i].idx << " " << nodes[i].x << " " << nodes[i].y << " " << nodes[i].demand << \
+			" " << nodes[i].tw_open << " " << nodes[i].tw_close << " " << nodes[i].unload_time << std::endl;
 	}
 }

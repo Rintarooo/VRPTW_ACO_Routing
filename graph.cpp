@@ -5,7 +5,6 @@
 #include <iomanip> // std::setprecision
 #include "graph.h"
 
-<<<<<<< HEAD
 // double INIT_PHERO = 1;
 // double EVAP_RATE = 0.5;
 // double ALPHA = 50;
@@ -43,10 +42,6 @@ Colony::~Colony()
 
 void Car::add_node(Node *a, double** matrix)
 {
-=======
-void Car::add_node(Node *a, double** matrix)
-{
->>>>>>> 062f36e6bb8bcf84b68a643a0e241cd04ad9ba96
 	if(!tour.empty()){// though the tour first adds the depot, it doesnt count time 
 		now_time += (int)matrix[tour.back().idx][a->idx] / car_speed;
 		now_time += a->unload_time;	
@@ -60,7 +55,7 @@ void Car::add_node(Node *a, double** matrix)
 
 bool Car::ok_capacity(Node a) const
 {
-	if(now_load + a.demand < car_capacity){
+	if(now_load + a.demand <= car_capacity){
 		return true;
 	}
 	else{
@@ -80,7 +75,6 @@ bool Car::ok_time(Node a, double** matrix) const
 	}
 }
 
-<<<<<<< HEAD
 void Graph::calculate_node_distance()
 {
 	for(int i = 0; i < num_node; i++){
@@ -91,14 +85,6 @@ void Graph::calculate_node_distance()
 }
 
 Graph::Graph(std::vector<std::vector<int>> param,
-=======
-double Route::calculate_distance(Node a, Node b) const
-{
-	return sqrt(pow(a.x-b.x, 2) + pow(a.y-b.y, 2));
-}
-
-Route::Route(std::vector<std::vector<int>> param,
->>>>>>> 062f36e6bb8bcf84b68a643a0e241cd04ad9ba96
 				int car_capacity, int num_car)
 {
 	this->num_car = num_car;
@@ -139,24 +125,13 @@ Route::Route(std::vector<std::vector<int>> param,
 			distance_matrix[i][j] = 0;// initialization all elements in a row
 		}
 	}
-<<<<<<< HEAD
 	calculate_node_distance();
-=======
-	for(int i = 0; i < num_node; i++){
-		for(int j = i + 1; j < num_node; j++){
-			distance_matrix[i][j] = distance_matrix[j][i] = calculate_distance(nodes[i], nodes[j]);
-		}
-	}
->>>>>>> 062f36e6bb8bcf84b68a643a0e241cd04ad9ba96
 }
 
 Graph::~Graph()
 { 
-<<<<<<< HEAD
 	std::cout << "destructor!" << std::endl;
-=======
 	std::cout << "Call destructor" << std::endl;
->>>>>>> 062f36e6bb8bcf84b68a643a0e241cd04ad9ba96
 	delete[] nodes;
 	nodes = nullptr;
 	delete[] cars;
@@ -255,30 +230,12 @@ void Graph::show_each_car_tour() const
 {
 	double total_tour_distance = 0;
 	for(int i = 0; i < num_car; i++){
-<<<<<<< HEAD
 		if(cars[i].tour.size() > 1){
 			std::cout << "vehicle" << i << " tour: ";
 			double tour_distance = 0;
 			calculate_tour_distance(cars[i].tour, tour_distance);
 			total_tour_distance += tour_distance;
 			std::cout << ", visited customer:" << cars[i].tour.size()-2 << std::endl;
-=======
-		// if(!cars[i].tour.empty()){
-		if(cars[i].tour.size() > 1){
-			double tour_distance = 0;
-			std::cout << "vehicle" << i << ": ";
-			for(int j = 0; j < cars[i].tour.size(); j++){
-				std::cout << cars[i].tour[j].idx << "->";
-				if(j+1 != cars[i].tour.size()){
-					tour_distance += distance_matrix[cars[i].tour[j].idx][cars[i].tour[j+1].idx];
-				}
-			}
-			std::cout << ", " << std::fixed << std::setprecision(1) <<  tour_distance << "km";
-			total_tour_distance += tour_distance;
-			if(cars[i].tour.size() > 2){
-				std::cout << ", visited customer:" << cars[i].tour.size()-2 << std::endl;
-			}
->>>>>>> 062f36e6bb8bcf84b68a643a0e241cd04ad9ba96
 		}
 		else{
 			std::cout << "vehicle" << i << ": not used" << std::endl;

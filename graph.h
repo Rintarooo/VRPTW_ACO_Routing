@@ -31,16 +31,10 @@ public:
 	Car* cars;
 	Node* nodes;
 	double** distance_matrix;
-<<<<<<< HEAD
 	void calculate_node_distance();
 	void calculate_tour_distance(std::vector<Node>, double&) const;
 	Graph(std::vector<std::vector<int>>, int, int);
 	virtual ~Graph();
-=======
-	double calculate_distance(Node, Node) const;
-	Route(std::vector<std::vector<int>>, int, int);
-	~Route();
->>>>>>> 062f36e6bb8bcf84b68a643a0e241cd04ad9ba96
 	void show_distance_matrix() const;
 	bool is_all_visited() const;
 	void GreedyAlgorithm();

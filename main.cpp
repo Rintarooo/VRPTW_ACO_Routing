@@ -4,10 +4,13 @@
 #include <ctime>
 #include <string>
 #include <vector>
+// #include <stdlib.h>// atoi; cast into int
 #include "graph.h"
+#include "vehicle.h"
+#include "colony.h"
 
 void file_loader (char *filename, 
-				std::vector<std::vector<int>> &param, 
+				std::vector<std::vector<int> > &param, 
 				int &car_capacity, int &num_car)
 {
 	//https://qiita.com/Reed_X1319RAY/items/098596cda78e9c1a6bad
@@ -39,28 +42,29 @@ void file_loader (char *filename,
 }
 
 int main(int argc, char *argv[]){
-	/*	Command 
-	($g++ -std=c++11  main.cpp -o main.exe)
-	($vim Probs/solomon_25/C101.txt)
-	$make clean && make
-	$./main.exe ./Probs/solomon_25/C101.txt		*/
 	if (argc < 2){
 		std::cout << "argc should be >= 2" << std::endl;
 		exit(0);
 	}
 	const clock_t start_time = clock();
-	std::vector<std::vector<int>> param;
+	std::vector<std::vector<int> > param;
 	int car_capacity, num_car;
 	file_loader(argv[1], param, car_capacity, num_car);
 	
-	Graph graph(param, car_capacity, num_car);
-	graph.GreedyAlgorithm();
-	graph.show_each_car_tour();
-	// graph.show_node_info();
-	// graph.show_distance_matrix();
-
-	// Colony colony(param, car_capacity, num_car);
-	// colony.show_distance_matrix();
+	// Graph* graph = new Graph(param, car_capacity, num_car);
+	// graph->run_GreedyAlgorithm();
+	// graph->show_each_car_tour();
+	// graph->show_node_info();
+	// graph->show_distance_matrix();
+	// delete graph;
+	// graph = nullptr;
+	
+	Colony* colony = new Colony(param, car_capacity, num_car);
+	colony->run_ACO();
+	// colony->show_each_car_tour();
+	// colony->show_distance_matrix();
+	delete colony;
+	colony = nullptr;
 
 	const clock_t end_time = clock();
 	std::cout << (end_time - start_time)/ double(CLOCKS_PER_SEC) << "sec" << std::endl;

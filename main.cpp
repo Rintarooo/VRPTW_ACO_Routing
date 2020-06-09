@@ -27,8 +27,8 @@ void file_loader (char *filename,
     std::stringstream ss(line);
     ss >> num_car >> car_capacity;
     while (std::getline(ifs, line)){
-        //std::cout << line.size() << std::endl;
-	    if(line.size() == 72){
+        std::cout << line.size() << std::endl;
+	    if(66 <= line.size() && line.size() <= 75){
 		    std::stringstream ss(line);
 	        std::vector<int> tmp_vec;
 	        int tmp;
@@ -61,7 +61,6 @@ int main(int argc, char *argv[]){
 	
 	Colony* colony = new Colony(param, car_capacity, num_car);
 	colony->run_ACO();
-	// colony->show_each_car_tour();
 	// colony->show_distance_matrix();
 	delete colony;
 	colony = nullptr;

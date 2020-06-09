@@ -36,7 +36,7 @@ Graph::Graph(std::vector<std::vector<int> > param,
 		//time windows
 		nodes[i].tw_open = param[i][4];
 		nodes[i].tw_close = param[i][5];
-		nodes[i].unload_time = param[i][6];
+		nodes[i].unload_time = (int)(0.2 * (param[i][5] - param[i][4]));
 	}
 
 	for(int i = 0; i < num_car; i++){
@@ -86,7 +86,7 @@ void Graph::show_distance_matrix() const
 
 bool Graph::is_all_visited() const
 {
-	for(int i = 0; i < num_node; i++){
+	for(int i = 1; i < num_node; i++){
 		if(!nodes[i].visited){
 			return false;
 		}
@@ -125,10 +125,10 @@ void Graph::run_GreedyAlgorithm()
 			cars[car_idx].add_node(&nodes[best_node_idx], distance_matrix);
 		}
 		else{// if edges are not found, return depot
-			if(cars[car_idx].now_idx != 0){// in case the vehicle did not return back to the depot
-				cars[car_idx].add_node(&nodes[0], distance_matrix);
-			}
 			if(car_idx + 1 < num_car){// check if the rest of vehicles exists
+				if(cars[car_idx].now_idx != 0){// in case the vehicle did not return back to the depot
+					cars[car_idx].add_node(&nodes[0], distance_matrix);
+				}
 				car_idx += 1;// assign next vehicle
 			}
 			else{
@@ -138,13 +138,18 @@ void Graph::run_GreedyAlgorithm()
 			
 		}
 	}//while loop done
+	if(cars[car_idx].now_idx != 0){// in case the vehicle did not return back to the depot
+				cars[car_idx].add_node(&nodes[0], distance_matrix);
+	}
 	std::cout << "algorithm done." << std::endl;
 }
 
 void Graph::calc_tour_distance(std::vector<Node>tour, double &tour_distance) const
 {
-	for(int j = 0; j < tour.size() - 1; j++){
-		tour_distance += distance_matrix[tour[j].idx][tour[j+1].idx];
+	if(tour.size() > 2){
+		for(int j = 0; j < tour.size() - 1; j++){
+			tour_distance += distance_matrix[tour[j].idx][tour[j+1].idx];
+		}
 	}
 }
 

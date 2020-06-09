@@ -10,7 +10,7 @@ public:
 	static const double alpha;
 	static const double beta;
 	static const double q;
-	static const int ant_time_step = 100;// ant time step iterator
+	static const int ant_time_step = 50;// ant time step iterator
 	static double threshold;
 	static const double decay_rate;
 	double** phero_matrix;

@@ -73,21 +73,27 @@ void Colony::move_ants()
 			cars[car_idx].add_node(&nodes[0], distance_matrix);// nodes[0] denotes depot
 		}
 		std::vector< std::pair<int, int> > feasible_edges;
-		for(int node_idx = 1; node_idx < num_node; node_idx++){
-			if(!nodes[node_idx].visited){
-				if(cars[car_idx].ok_capacity(nodes[node_idx])){
-					if(cars[car_idx].ok_time(nodes[node_idx], distance_matrix)){
-						feasible_edges.push_back(std::make_pair(cars[car_idx].now_idx, node_idx));
+		feasible_edges.clear();
+		while (feasible_edges.empty() && cars[car_idx].now_time <= 1200){
+			for(int node_idx = 1; node_idx < num_node; node_idx++){
+				if(!nodes[node_idx].visited){
+					if(cars[car_idx].ok_capacity(nodes[node_idx])){
+						if(cars[car_idx].ok_time(nodes[node_idx], distance_matrix)){
+							feasible_edges.push_back(std::make_pair(cars[car_idx].now_idx, node_idx));
+						}
 					}
 				}
 			}
+			if(feasible_edges.empty()){
+				cars[car_idx].now_time += 30;// wait for the tw_open at the depot
+			}
 		}
 		
-		if(feasible_edges.empty()){// if edges are not found, return depot
-			if(cars[car_idx].now_idx != 0){// in case the vehicle did not return back to the depot
-				cars[car_idx].add_node(&nodes[0], distance_matrix);
-			}
+		if(feasible_edges.empty()){// if still edges are not found, return depot
 			if(car_idx + 1 < num_car){// check if the rest of vehicles exists
+				if(cars[car_idx].now_idx != 0){// in case the vehicle did not return back to the depot
+					cars[car_idx].add_node(&nodes[0], distance_matrix);
+				}
 				car_idx += 1;// assign next vehicle			
 			}
 			else{
@@ -95,8 +101,6 @@ void Colony::move_ants()
 				break;
 			}
 		}
-
-
 		else{
 			int next_node_idx;
 			if (get_rand() < threshold){// choose randomly next node, this prevents local optimization
@@ -113,7 +117,6 @@ void Colony::move_ants()
 				for (auto up : ups){
 					probs.push_back(up / sum);
 				}
-
 				cumulative_sum.push_back(probs.front());
 				for (int i = 0; i < probs.size() - 1; i ++){
 					probs[i+1] += probs[i];
@@ -123,7 +126,6 @@ void Colony::move_ants()
 				double candi_v;
 				double best_v = INFIN;
 				double r = get_rand();
-				// for (auto itr = cumulative_sum.begin(); itr != cumulative_sum.end(); itr++){
 				for (int x = 0; x < cumulative_sum.size(); x++){
 					if (r <= cumulative_sum[x]){
 						candi_idx = x;
@@ -135,14 +137,10 @@ void Colony::move_ants()
 					}
 				}
 				if (best_v == INFIN){
-						for (auto x : cumulative_sum){
-							std::cout << x << " ";
-						}
-						std::cout << "cumulative_sum.size():" << cumulative_sum.size() << std::endl;
-						std::cout << "r:" << r << std::endl;
 						break;
 				}
 				next_node_idx = feasible_edges[best_idx].second;
+				
 				// search algorithm
 				// double rand = get_rand();
 				// // std::sort(cumulative_sum.begin(), cumulative_sum.end());
@@ -157,7 +155,10 @@ void Colony::move_ants()
 			}
 			cars[car_idx].add_node(&nodes[next_node_idx], distance_matrix);
 		}
-	}// while loop finish
+	}// while loop done
+	if(cars[car_idx].now_idx != 0){// in case the vehicle did not return back to the depot
+		cars[car_idx].add_node(&nodes[0], distance_matrix);
+	}
 }
 
 double Colony::calc_prob(int now_node_idx, int next_node_idx) const

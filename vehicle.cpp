@@ -27,15 +27,10 @@ bool Car::ok_time(Node a, double** matrix) const
 {
 	int travel_time = (int)matrix[now_idx][a.idx] / car_speed;
 	int arrival_time = now_time + travel_time;
-	if(a.tw_open >= arrival_time){// arrive before open
-		return false;
+	if(a.tw_open <= arrival_time && arrival_time + a.unload_time <= a.tw_close){
+		return true;// arrive after opening && leave before closing
 	}
 	else{
-		if(arrival_time + a.unload_time >= a.tw_close){// leave after close
-			return false;
-		}
-		else{
-			return true;
-		}
+		return false;
 	}
 }

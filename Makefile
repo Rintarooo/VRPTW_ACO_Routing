@@ -6,7 +6,7 @@ RM = rm -f
 CFLAGS = -Wall -g 
 # -g is for debuger; lldb for MacOS
 
-all: main.exe
+all: $(program)
 clean:
 	$(RM) $(objs) $(program)
 

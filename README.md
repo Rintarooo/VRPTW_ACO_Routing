@@ -2,12 +2,12 @@
 C++11 or later required
 
 ## Problem description
-Capacitated Vehicle Routing Problem (CVRP) and Vehicle Routing Problem with Time Windows(VRPTW) are briefly explained here
+Capacitated Vehicle Routing Problem (CVRP) and Vehicle Routing Problem with Time Windows(VRPTW) are briefly explained here  
+
+https://developers.google.com/optimization/routing/cvrp  
 　　
-https://developers.google.com/optimization/routing/cvrp
-　　
-http://cognitive-robotics17.csail.mit.edu/docs/tutorials/Tutorial10_Multi_vehicle_Routing_with_Time_Windows.pdf
-　　
+http://cognitive-robotics17.csail.mit.edu/docs/tutorials/Tutorial10_Multi_vehicle_Routing_with_Time_Windows.pdf  
+  
 　　
 I implemented 2 types of alogorithm, Ant Colony Optimization (ACO) and Greedy Algorithm.
 

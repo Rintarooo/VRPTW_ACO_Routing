@@ -108,7 +108,7 @@ void Colony::move_ants()
 			}
 			else{// follow heuristc and pheromone formula, choose next node
 				std::vector<double> ups, probs, cumulative_sum;
-				double prob_up = 0.0, sum = 0.0;
+				double sum = 0.0;
 				for (auto feasible_edge : feasible_edges){
 					double up = calc_prob(feasible_edge.first, feasible_edge.second);
 					sum += up;

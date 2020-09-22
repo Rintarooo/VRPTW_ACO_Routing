@@ -9,16 +9,22 @@ https://developers.google.com/optimization/routing/cvrp
 http://cognitive-robotics17.csail.mit.edu/docs/tutorials/Tutorial10_Multi_vehicle_Routing_with_Time_Windows.pdf  
 
 I implemented 2 types of alogorithm, Ant Colony Optimization (ACO) and Greedy Algorithm.
-
+  
+At each time step, if a calculated total distance is smaller than the minimum distance, the minimum distance would be updated and printed.
+  
 ## Usage
+Make sure you've installed CMake and its version above 3.1
+  
+```cmake --version```
+  
 Run the following command
 
-```make clean && make```
+```./run.sh```
 
-```./main.exe ./Probs/solomon_***/***.txt```
+```build/main.exe Probs/solomon_***/***.txt```
 
-the second argument is text file path
-
+Specify text file for the second argument
+  
 ## Acknowledgement
 Public benchmark for VRPTW, [Solomon's problem sets](http://w.cba.neu.edu/~msolomon/problems.htm) is obtained from "data" directory in this [repo](https://github.com/DouYishun/vrp-espprc).
 

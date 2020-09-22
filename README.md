@@ -23,11 +23,13 @@ Run the following command
 
 ```build/main.exe Probs/solomon_***/***.txt```
 
-Specify text file for the second argument
+Specify text file in the second argument
   
 ## Acknowledgement
 Public benchmark for VRPTW, [Solomon's problem sets](http://w.cba.neu.edu/~msolomon/problems.htm) is obtained from "data" directory in this [repo](https://github.com/DouYishun/vrp-espprc).
   
+
+
 ## Example of Solution
 e.g. seek minimum tour length by ACO
 

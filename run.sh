@@ -9,7 +9,8 @@ fi
 #https://kamino.hatenablog.com/entry/cmake_tutorial1
 mkdir build
 cd build
-cmake ..
+# cmake ..
+cmake CMAKE_BUILD_TYPE=DEBUG ..
 cmake --build .
 
 echo "run the following command: build/main.exe Probs/solomon_***/***.txt"

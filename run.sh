@@ -13,4 +13,4 @@ cd build
 cmake CMAKE_BUILD_TYPE=DEBUG ..
 cmake --build .
 
-echo "run the following command: build/main.exe Probs/solomon_***/***.txt"
+echo "run the following command: build/main.exe probs/solomon_***/***.txt"

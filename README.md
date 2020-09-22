@@ -21,7 +21,7 @@ Run the following command
 
 ```./run.sh```
 
-```build/main.exe Probs/solomon_***/***.txt```
+```build/main.exe probs/solomon_***/***.txt```
 
 Specify text file in the second argument
   

@@ -1,1 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/c++  -std=c++11 -O2 -Wall -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/main.exe.dir/main.cpp.o -o main.exe  -Wl,-rpath,/Users/satourintarou/Coding/Python/GitHub/VRPTW_ACO_Routing/build/src src/libgreetings.dylib 

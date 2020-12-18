@@ -1,45 +1,13 @@
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <ctime>
-#include <string>
+// #include <string>
 #include <vector>
 // #include <stdlib.h>// atoi; cast into int
 #include "graph.h"
 #include "vehicle.h"
 #include "colony.h"
+#include "fileloader.h"
 
-void file_loader (char *filename, 
-				std::vector<std::vector<int> > &param, 
-				int &car_capacity, int &num_car)
-{
-	//https://qiita.com/Reed_X1319RAY/items/098596cda78e9c1a6bad
-	std::ifstream ifs(filename, std::ios::in);
-	if(!ifs){
-		std::cout << "File not found, check argv" << std::endl;
-		std::exit(1); 
-    }
-    std::string line;
-    for(int i = 0; i < 4; i++){
-        std::getline(ifs, line);
-    }
-    std::getline(ifs, line);
-    std::stringstream ss(line);
-    ss >> num_car >> car_capacity;
-    while (std::getline(ifs, line)){
-        std::cout << line.size() << std::endl;
-	    if(66 <= line.size() && line.size() <= 75){
-		    std::stringstream ss(line);
-	        std::vector<int> tmp_vec;
-	        int tmp;
-	        while (ss >> tmp){
-	            tmp_vec.push_back(tmp);
-	        }
-	        param.push_back(tmp_vec);
-	    }
-    }
-    ifs.close();
-}
 
 int main(int argc, char *argv[]){
 	if (argc < 2){
@@ -49,6 +17,8 @@ int main(int argc, char *argv[]){
 	const clock_t start_time = clock();
 	std::vector<std::vector<int> > param;
 	int car_capacity, num_car;
+	car_capacity=0;
+	num_car=0;
 	file_loader(argv[1], param, car_capacity, num_car);
 	
 	// Graph* graph = new Graph(param, car_capacity, num_car);

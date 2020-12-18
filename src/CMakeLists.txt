@@ -3,6 +3,7 @@ add_library(greetings
     colony.cpp
     graph.cpp
     vehicle.cpp
+    fileloader.cpp
   )
 
 # PROJECT_SOURCE_DIR is absolute path of root directory for this repository

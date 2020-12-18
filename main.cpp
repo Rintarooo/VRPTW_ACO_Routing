@@ -1,8 +1,8 @@
 #include <iostream>
 #include <ctime>
-// #include <string>
 #include <vector>
 // #include <stdlib.h>// atoi; cast into int
+
 #include "graph.h"
 #include "vehicle.h"
 #include "colony.h"
@@ -11,8 +11,8 @@
 
 int main(int argc, char *argv[]){
 	if (argc < 2){
-		std::cout << "argc should be >= 2" << std::endl;
-		exit(0);
+		std::cerr << "argc: " << argc << "should be >= 2";
+		return -1;
 	}
 	const clock_t start_time = clock();
 	std::vector<std::vector<int> > param;
